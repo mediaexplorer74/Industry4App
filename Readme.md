@@ -1,4 +1,4 @@
-# Industry4App v1.0 pre-alpha - ветка master
+# Industry4App v1.0.1 pre-alpha - ветка master
 
 ![](/Images/logo.png)
 
@@ -11,6 +11,7 @@ UWP-приложения Industry4App - это что-то вроде ридер
 ## Скриншотики
 ![](/Images/sshot01.png)
 ![](/Images/sshot02.png)
+![](/Images/sshot03.png)
 
 ## Тех. моментики
 Я использую Win. SDK 19041 и Min. Win. SDK 10240, чтобы обеспечить совместимость с ранней-сборкой 10240 ретро-ОС Windows 10 Mobile. 

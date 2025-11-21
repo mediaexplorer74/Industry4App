@@ -9,12 +9,12 @@
   <Identity
     Name="ME.Industry4AppV1"
     Publisher="CN=Admin"
-    Version="1.0.0.0" />
+    Version="1.0.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="dd2578c9-87d3-4913-a2f1-4773717dc135" PhonePublisherId="85000075-0000-0095-0000-000025000099"/>
 
   <Properties>
-    <DisplayName>Industry4App v1.0</DisplayName>
+    <DisplayName>Industry4App v1.0.1</DisplayName>
     <PublisherDisplayName>Admin</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -32,7 +32,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="Industry4App.App">
       <uap:VisualElements
-        DisplayName="Industry4App 1.0"
+        DisplayName="Industry4App 1.0.1"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="Industry4App UWP app"

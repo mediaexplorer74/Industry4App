@@ -57,7 +57,7 @@ namespace Industry4App
                         var item = new NewsItem();
 
                         // 1. Ищем ссылку и заголовок
-                        var linkNode = article.Descendants("a").FirstOrDefault();
+                        var linkNode = article.Descendants("a").FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("js-item-link"));
                         if (linkNode != null)
                         {
                             item.ArticleUrl = linkNode.GetAttributeValue("href", "");
@@ -69,9 +69,9 @@ namespace Industry4App
 
                             // Пытаемся найти заголовок внутри ссылки
                             var titleNode = linkNode.Descendants("span")
-                                .FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("title"));
+                                .FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("g-inline-text-badges__text"));
 
-                            // Если нет span с title, берем просто текст
+                            // Если нет span с g-inline-text-badges__text, берем просто текст
                             item.Title = titleNode?.InnerText?.Trim() ?? linkNode.InnerText?.Trim();
                         }
                         else
@@ -128,11 +128,20 @@ namespace Industry4App
                         }
 
                         // 3. Ищем краткое описание (Subtitle)
-                        var subtitleNode = article.Descendants("span")
-                             .FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("subtitle") ||
-                                                n.GetAttributeValue("class", "").Contains("item__subtitle") ||
-                                                n.GetAttributeValue("class", "").Contains("item__text"));
-                        item.Summary = subtitleNode?.InnerText?.Trim() ?? "Нет описания";
+                        // На сайте RBC в карточках новостей краткое описание часто отсутствует,
+                        // поэтому будем использовать категорию статьи как дополнительную информацию
+                        var categoryNode = article.Descendants("div")
+                            .FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("item__category"));
+                        
+                        if (categoryNode != null)
+                        {
+                            var categoryLink = categoryNode.Descendants("a").FirstOrDefault();
+                            item.Summary = categoryLink?.InnerText?.Trim() ?? "Нет категории";
+                        }
+                        else
+                        {
+                            item.Summary = "Нет описания";
+                        }
 
                         if (!string.IsNullOrEmpty(item.Summary))
                         {
