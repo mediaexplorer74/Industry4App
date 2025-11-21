@@ -48,9 +48,9 @@ namespace Industry4App
             {
                 // Формируем заголовок страницы в формате "Summary - Title" с ограничением длины заголовка
                 string title = item.Title ?? "";
-                if (title.Length > 50)
+                if (title.Length > 20)
                 {
-                    title = title.Substring(0, 50) + "...";
+                    title = title.Substring(0, 20) + "...";
                 }
                 HeaderTitle.Text = $"{item.Summary} - {title}";
                 
@@ -152,7 +152,8 @@ namespace Industry4App
                             content = content.Replace("&nbsp;", " ")
                                            .Replace("&laquo;", "\"")
                                            .Replace("&raquo;", "\"")
-                                           .Replace("&mdash;", "-");
+                                           .Replace("&mdash;", "-")
+                                           .Replace("&ndash;", "-"); // Также заменяем короткое тире
                         }
                         else
                         {
@@ -162,7 +163,8 @@ namespace Industry4App
                             content = content.Replace("&nbsp;", " ")
                                            .Replace("&laquo;", "\"")
                                            .Replace("&raquo;", "\"")
-                                           .Replace("&mdash;", "-");
+                                           .Replace("&mdash;", "-")
+                                           .Replace("&ndash;", "-"); // Также заменяем короткое тире
                         }
                     }
 
@@ -182,7 +184,8 @@ namespace Industry4App
                             ArticleTitleTextBlock.Text = title.Replace("&nbsp;", " ")
                                                              .Replace("&laquo;", "\"")
                                                              .Replace("&raquo;", "\"")
-                                                             .Replace("&mdash;", "-");
+                                                             .Replace("&mdash;", "-")
+                                                             .Replace("&ndash;", "-"); // Также заменяем короткое тире
                         }
                         
                         // Обновляем обзор статьи
@@ -192,13 +195,15 @@ namespace Industry4App
                             ArticleOverviewTextBlock.Text = overview.Replace("&nbsp;", " ")
                                                                    .Replace("&laquo;", "\"")
                                                                    .Replace("&raquo;", "\"")
-                                                                   .Replace("&mdash;", "-");
+                                                                   .Replace("&mdash;", "-")
+                                                                   .Replace("&ndash;", "-"); // Также заменяем короткое тире
                         }
                         
                         // Обновляем основной контент статьи
                         if (!string.IsNullOrEmpty(content))
                         {
-                            ArticleContentTextBlock.Text = content;
+                            // Удаляем лишние пустые строки и нормализуем пробелы перед отображением
+                            ArticleContentTextBlock.Text = NormalizeText(content);
                         }
                         else
                         {
@@ -222,6 +227,25 @@ namespace Industry4App
             {
                 Frame.GoBack();
             }
+        }
+        
+        /// <summary>
+        /// Удаляет лишние пустые строки и нормализует пробелы в тексте
+        /// </summary>
+        /// <param name="text">Входной текст</param>
+        /// <returns>Нормализованный текст</returns>
+        private string NormalizeText(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text;
+            
+            // Заменяем множественные пробелы на одиночные
+            string normalized = System.Text.RegularExpressions.Regex.Replace(text, @"\s+", " ");
+            
+            // Заменяем множественные переводы строк на максимум 2
+            normalized = System.Text.RegularExpressions.Regex.Replace(normalized, @"\n\s*\n", "\n\n");
+            
+            return normalized.Trim();
         }
     }
 }

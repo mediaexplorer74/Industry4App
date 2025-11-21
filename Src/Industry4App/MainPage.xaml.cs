@@ -26,9 +26,25 @@ namespace Industry4App
             {
                 await LoadNews();
             }
+            
+            // Включаем возможность обновления через pull-to-refresh
+            if (RefreshContainer != null)
+            {
+                RefreshContainer.RefreshRequested += async (refreshTrigger, args) =>
+                {
+                    // Показываем индикатор загрузки
+                    var deferral = args.GetDeferral();
+                    
+                    // Загружаем новости с обновлением
+                    await LoadNews(true);
+                    
+                    // Скрываем индикатор загрузки
+                    deferral.Complete();
+                };
+            }
         }
 
-        private async Task LoadNews()
+        private async Task LoadNews(bool isRefresh = false)
         {
             string url = "https://trends.rbc.ru/trends/industry";
 
@@ -44,13 +60,19 @@ namespace Industry4App
                     HtmlDocument doc = new HtmlDocument();
                     doc.LoadHtml(html);
 
-                    // ВАЖНО: Здесь мы ищем карточки новостей. 
+                    // ВАЖНО: Здесь мы ищем карточки новостей.
                     // На момент написания RBC использует разные классы, попробуем найти общие контейнеры.
                     // Обычно карточки лежат в div с классами js-library-card или item__wrap
 
                     var articles = doc.DocumentNode.Descendants("article")
-                        .Where(node => node.GetAttributeValue("class", "").Contains("item js-load-item"));
-                        //.Take(50); // Берем до 50 штук
+                        .Where(node => node.GetAttributeValue("class", "").Contains("item js-load-item"))
+                        .Take(50); // Берем до 50 штук
+
+                    // Если это обновление (pull-to-refresh), очищаем старые элементы
+                    if (isRefresh)
+                    {
+                        NewsItems.Clear();
+                    }
 
                     foreach (var article in articles)
                     {
@@ -80,6 +102,13 @@ namespace Industry4App
                                     .FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("g-inline-text-badges__text"));
                                     
                                 item.Title = titleNode?.InnerText?.Trim() ?? "";
+                                
+                                // Заменяем символы &nbsp;, &laquo;, &raquo;, &mdash; в заголовке
+                                item.Title = item.Title.Replace("&nbsp;", " ")
+                                                       .Replace("&laquo;", "\"")
+                                                       .Replace("&raquo;", "\"")
+                                                       .Replace("&mdash;", "-")
+                                                       .Replace("&ndash;", "-");
                             }
                         }
 
@@ -134,7 +163,7 @@ namespace Industry4App
                         // Заглушка, если картинки нет
                         if (string.IsNullOrEmpty(item.ImageUrl))
                         {
-                            item.ImageUrl = "ms-appx:///Assets/assets/default_icon.png";
+                            item.ImageUrl = "ms-appx:///Assets/StoreLogo.png";
                         }
 
                         // 3. Ищем краткое описание (Subtitle)
@@ -161,7 +190,38 @@ namespace Industry4App
                         // Добавляем в список, если нашли хотя бы заголовок
                         if (!string.IsNullOrEmpty(item.Title))
                         {
-                            NewsItems.Add(item);
+                            // Проверяем, что элемент с таким URL еще не добавлен
+                            if (!NewsItems.Any(i => i.ArticleUrl == item.ArticleUrl))
+                            {
+                                // Заменяем символы &nbsp;, &laquo;, &raquo;, &mdash; в кратком описании
+                                item.Summary = item.Summary.Replace("&nbsp;", " ")
+                                                          .Replace("&laquo;", "\"")
+                                                          .Replace("&raquo;", "\"")
+                                                          .Replace("&mdash;", "-")
+                                                          .Replace("&ndash;", "-");
+                                
+                                NewsItems.Add(item);
+                            }
+                        }
+                    }
+                    
+                    // После загрузки всех элементов, если это обновление, прокручиваем список к началу
+                    if (isRefresh)
+                    {
+                        // Используем NewsItems, так как это имя коллекции, привязанной к ListView
+                        if (NewsItems.Count > 0)
+                        {
+                            // Прокручиваем к первому элементу
+                            var firstItem = NewsItems.FirstOrDefault();
+                            if (firstItem != null)
+                            {
+                                // Находим ListView в интерфейсе по имени
+                                var listView = this.FindName("NewsListView") as ListView;
+                                if (listView != null)
+                                {
+                                    listView.ScrollIntoView(firstItem);
+                                }
+                            }
                         }
                     }
                 }
@@ -175,7 +235,7 @@ namespace Industry4App
         }
 
         // Обработка клика по плитке
-        private void GridView_ItemClick(object sender, ItemClickEventArgs e)
+        private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             var clickedItem = e.ClickedItem as NewsItem;
             if (clickedItem != null)
