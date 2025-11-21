@@ -49,8 +49,8 @@ namespace Industry4App
                     // Обычно карточки лежат в div с классами js-library-card или item__wrap
 
                     var articles = doc.DocumentNode.Descendants("article")
-                        .Where(node => node.GetAttributeValue("class", "").Contains("item js-load-item"))
-                        .Take(50); // Берем до 50 штук
+                        .Where(node => node.GetAttributeValue("class", "").Contains("item js-load-item"));
+                        //.Take(50); // Берем до 50 штук
 
                     foreach (var article in articles)
                     {

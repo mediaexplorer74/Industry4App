@@ -46,7 +46,13 @@ namespace Industry4App
 
             if (e.Parameter is NewsItem item)
             {
-                HeaderTitle.Text = item.Title;
+                // Формируем заголовок страницы в формате "Summary - Title" с ограничением длины заголовка
+                string title = item.Title ?? "";
+                if (title.Length > 50)
+                {
+                    title = title.Substring(0, 50) + "...";
+                }
+                HeaderTitle.Text = $"{item.Summary} - {title}";
                 
                 // Если содержимое статьи уже загружено, отображаем его
                 if (!string.IsNullOrEmpty(item.ArticleContent))
@@ -142,15 +148,21 @@ namespace Industry4App
                             
                             content = mainContent.InnerText.Trim();
                             
-                            // Заменяем &nbsp; на обычный пробел
-                            content = content.Replace("&nbsp;", " ");
+                            // Заменяем &nbsp; на обычный пробел, &laquo; и &raquo; на кавычки, &mdash; на дефис
+                            content = content.Replace("&nbsp;", " ")
+                                           .Replace("&laquo;", "\"")
+                                           .Replace("&raquo;", "\"")
+                                           .Replace("&mdash;", "-");
                         }
                         else
                         {
                             content = contentNode.InnerText.Trim();
                             
-                            // Заменяем &nbsp; на обычный пробел
-                            content = content.Replace("&nbsp;", " ");
+                            // Заменяем &nbsp; на обычный пробел, &laquo; и &raquo; на кавычки, &mdash; на дефис
+                            content = content.Replace("&nbsp;", " ")
+                                           .Replace("&laquo;", "\"")
+                                           .Replace("&raquo;", "\"")
+                                           .Replace("&mdash;", "-");
                         }
                     }
 
@@ -166,15 +178,21 @@ namespace Industry4App
                         // Обновляем заголовок статьи
                         if (!string.IsNullOrEmpty(title))
                         {
-                            // Заменяем &nbsp; на обычный пробел в заголовке
-                            ArticleTitleTextBlock.Text = title.Replace("&nbsp;", " ");
+                            // Заменяем &nbsp; на обычный пробел, заменяем &laquo; и &raquo; на кавычки, заменяем &mdash; на дефис в заголовке
+                            ArticleTitleTextBlock.Text = title.Replace("&nbsp;", " ")
+                                                             .Replace("&laquo;", "\"")
+                                                             .Replace("&raquo;", "\"")
+                                                             .Replace("&mdash;", "-");
                         }
                         
                         // Обновляем обзор статьи
                         if (!string.IsNullOrEmpty(overview))
                         {
-                            // Заменяем &nbsp; на обычный пробел в обзоре
-                            ArticleOverviewTextBlock.Text = overview.Replace("&nbsp;", " ");
+                            // Заменяем &nbsp; на обычный пробел, &laquo; и &raquo; на кавычки, &mdash; на дефис в обзоре
+                            ArticleOverviewTextBlock.Text = overview.Replace("&nbsp;", " ")
+                                                                   .Replace("&laquo;", "\"")
+                                                                   .Replace("&raquo;", "\"")
+                                                                   .Replace("&mdash;", "-");
                         }
                         
                         // Обновляем основной контент статьи
