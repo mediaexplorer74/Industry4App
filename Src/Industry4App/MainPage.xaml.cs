@@ -56,27 +56,37 @@ namespace Industry4App
                     {
                         var item = new NewsItem();
 
-                        // 1. Ищем ссылку и заголовок
-                        var linkNode = article.Descendants("a").FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("js-item-link"));
-                        if (linkNode != null)
+                        // 1. Ищем заголовок статьи
+                        // Структура заголовка на сайте RBC: <span class="item__title"><a class="g-inline-text-badges js-item-link" ...><span class="g-inline-text-badges__text">Заголовок статьи</span></a></span>
+                        var titleContainer = article.Descendants("span")
+                            .FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("item__title"));
+                        
+                        if (titleContainer != null)
                         {
-                            item.ArticleUrl = linkNode.GetAttributeValue("href", "");
-                            // Если ссылка относительная (начинается с /), добавляем домен
-                            if (!item.ArticleUrl.StartsWith("http"))
+                            var linkNode = titleContainer.Descendants("a")
+                                .FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("js-item-link"));
+                            
+                            if (linkNode != null)
                             {
-                                item.ArticleUrl = "https://trends.rbc.ru" + item.ArticleUrl;
+                                item.ArticleUrl = linkNode.GetAttributeValue("href", "");
+                                // Если ссылка относительная (начинается с /), добавляем домен
+                                if (!item.ArticleUrl.StartsWith("http"))
+                                {
+                                    item.ArticleUrl = "https://trends.rbc.ru" + item.ArticleUrl;
+                                }
+
+                                // Находим заголовок статьи внутри span с классом g-inline-text-badges__text
+                                var titleNode = linkNode.Descendants("span")
+                                    .FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("g-inline-text-badges__text"));
+                                    
+                                item.Title = titleNode?.InnerText?.Trim() ?? "";
                             }
-
-                            // Пытаемся найти заголовок внутри ссылки
-                            var titleNode = linkNode.Descendants("span")
-                                .FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("g-inline-text-badges__text"));
-
-                            // Если нет span с g-inline-text-badges__text, берем просто текст
-                            item.Title = titleNode?.InnerText?.Trim() ?? linkNode.InnerText?.Trim();
                         }
-                        else
+
+                        // Если заголовок не найден, пробуем альтернативные способы
+                        if (string.IsNullOrEmpty(item.Title))
                         {
-                            // Если ссылка не найдена, пробуем найти заголовок напрямую в article
+                            // Пробуем найти заголовок напрямую в article
                             var titleNode = article.Descendants("span")
                                 .FirstOrDefault(n => n.GetAttributeValue("class", "").Contains("title") ||
                                                    n.GetAttributeValue("class", "").Contains("item__title"));
@@ -143,10 +153,10 @@ namespace Industry4App
                             item.Summary = "Нет описания";
                         }
 
-                        if (!string.IsNullOrEmpty(item.Summary))
+                        /*if (!string.IsNullOrEmpty(item.Summary))
                         {
                             item.Title = item.Summary;
-                        }
+                        }*/
 
                         // Добавляем в список, если нашли хотя бы заголовок
                         if (!string.IsNullOrEmpty(item.Title))

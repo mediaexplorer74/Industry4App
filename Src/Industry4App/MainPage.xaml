@@ -38,7 +38,8 @@
                         <!-- Текст -->
                         <StackPanel Grid.Row="1" Padding="10">
                             <TextBlock Text="{x:Bind Title}" 
-                                       TextWrapping="Wrap" 
+                                       TextWrapping="Wrap"
+                                       Foreground="Black"
                                        MaxLines="3" 
                                        TextTrimming="CharacterEllipsis"
                                        FontWeight="SemiBold"/>
