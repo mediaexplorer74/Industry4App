@@ -10,13 +10,14 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Кнопка Назад -->
-        <CommandBar DefaultLabelPosition="Right">
+        <!--CommandBar DefaultLabelPosition="Right">
             <AppBarButton Icon="Back" Label="Назад" Click="BackButton_Click"/>
             <AppBarElementContainer>
                 <TextBlock x:Name="HeaderTitle" Text="Загрузка..." VerticalAlignment="Center" Margin="10,0,0,0"/>
             </AppBarElementContainer>
-        </CommandBar>
+        </CommandBar-->
+        <!-- Заголовок -->
+        <TextBlock x:Name="HeaderTitle" Text="Детали дела" VerticalAlignment="Center" Margin="10,0,0,0"/>
 
         <!-- Браузер для просмотра статьи -->
         <WebView x:Name="ArticleWebView" Grid.Row="1"/>

@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml;
+﻿using Windows.Foundation.Metadata;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -14,6 +16,30 @@ namespace Industry4App
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            // ------------
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility
+                = AppViewBackButtonVisibility.Visible;
+
+            SystemNavigationManager.GetForCurrentView().BackRequested += (s, a) =>
+            {
+                // If we don't have proper parameters, go back
+                if (Frame.CanGoBack)
+                    Frame.GoBack();
+                a.Handled = true;
+            };
+
+            if (ApiInformation.IsApiContractPresent("Windows.Phone.PhoneContract", 1, 0))
+            {
+                Windows.Phone.UI.Input.HardwareButtons.BackPressed += (s, a) =>
+                {
+                    // If we don't have proper parameters, go back
+                    if (Frame.CanGoBack)
+                        Frame.GoBack();
+                    a.Handled = true;
+                };
+            }
+            // ------------   
 
             if (e.Parameter is NewsItem item)
             {

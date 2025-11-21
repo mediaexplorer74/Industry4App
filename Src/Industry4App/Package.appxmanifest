@@ -11,7 +11,7 @@
     Publisher="CN=Admin"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="dd2578c9-87d3-4913-a2fc-4773717dc135" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="dd2578c9-87d3-4913-a2f1-4773717dc135" PhonePublisherId="85000075-0000-0095-0000-000025000099"/>
 
   <Properties>
     <DisplayName>Industry4App v1.0</DisplayName>

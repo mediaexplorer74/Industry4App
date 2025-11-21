@@ -124,7 +124,7 @@ namespace Industry4App
                         // Заглушка, если картинки нет
                         if (string.IsNullOrEmpty(item.ImageUrl))
                         {
-                            item.ImageUrl = "ms-appx:///Assets/StoreLogo.png";
+                            item.ImageUrl = "ms-appx:///Assets/assets/default_icon.png";
                         }
 
                         // 3. Ищем краткое описание (Subtitle)
@@ -133,6 +133,11 @@ namespace Industry4App
                                                 n.GetAttributeValue("class", "").Contains("item__subtitle") ||
                                                 n.GetAttributeValue("class", "").Contains("item__text"));
                         item.Summary = subtitleNode?.InnerText?.Trim() ?? "Нет описания";
+
+                        if (!string.IsNullOrEmpty(item.Summary))
+                        {
+                            item.Title = item.Summary;
+                        }
 
                         // Добавляем в список, если нашли хотя бы заголовок
                         if (!string.IsNullOrEmpty(item.Title))
