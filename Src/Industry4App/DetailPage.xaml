@@ -19,7 +19,14 @@
         <!-- Заголовок -->
         <TextBlock x:Name="HeaderTitle" Text="Детали дела" VerticalAlignment="Center" Margin="10,0,0,0"/>
 
-        <!-- Браузер для просмотра статьи -->
-        <WebView x:Name="ArticleWebView" Grid.Row="1"/>
+        <!-- ScrollView для отображения содержимого статьи -->
+        <ScrollViewer Grid.Row="1" Padding="10">
+            <StackPanel>
+                <Image x:Name="ArticleImage" Stretch="Uniform" MaxHeight="300" Margin="0,0,0,10"/>
+                <TextBlock x:Name="ArticleTitleTextBlock" TextWrapping="Wrap" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                <TextBlock x:Name="ArticleOverviewTextBlock" TextWrapping="Wrap" FontSize="14" FontStyle="Italic" Margin="0,0,0,10"/>
+                <TextBlock x:Name="ArticleContentTextBlock" TextWrapping="Wrap" FontSize="14"/>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

@@ -11,7 +11,9 @@ namespace Industry4App
     {
         public string Title { get; set; }       // Заголовок
         public string ImageUrl { get; set; }    // Ссылка на картинку
-        public string ArticleUrl { get; set; }  // Ссылка на саму статью
+        public string ArticleUrl { get; set; } // Ссылка на саму статью
         public string Summary { get; set; }     // Краткое описание (если есть)
+        public string ArticleContent { get; set; } // Содержимое статьи
+        public string ArticleAudioUrl { get; set; } // URL аудио-версии статьи (если есть)
     }
 }

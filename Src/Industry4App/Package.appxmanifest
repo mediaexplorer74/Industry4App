@@ -7,14 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="ME.Industry4AppV1"
+    Name="ME.Industry4AppV2"
     Publisher="CN=Admin"
-    Version="1.0.2.0" />
+    Version="2.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="dd2578c9-87d3-4913-a2f1-4773717dc135" PhonePublisherId="85000075-0000-0095-0000-000025000099"/>
+  <mp:PhoneIdentity PhoneProductId="dd2578c9-87d3-4913-a2f1-4773717dc199" PhonePublisherId="85000075-0000-0100-0000-000025000199"/>
+
 
   <Properties>
-    <DisplayName>Industry4App v1.0.2</DisplayName>
+    <DisplayName>Industry4App v2.0</DisplayName>
     <PublisherDisplayName>Admin</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -32,7 +33,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="Industry4App.App">
       <uap:VisualElements
-        DisplayName="Industry4App 1.0.2"
+        DisplayName="Industry4App 2.0"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="Industry4App UWP app"
