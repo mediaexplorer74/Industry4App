@@ -1,4 +1,4 @@
-# Industry4App v1.0.2 pre-alpha - ветка master
+# Industry4App v1.0.2 pre-alpha - ветка dev
 
 ![](/Images/logo.png)
 
