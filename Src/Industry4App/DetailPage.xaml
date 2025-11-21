@@ -1,0 +1,24 @@
+﻿<Page
+    x:Class="Industry4App.DetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Industry4App">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Кнопка Назад -->
+        <CommandBar DefaultLabelPosition="Right">
+            <AppBarButton Icon="Back" Label="Назад" Click="BackButton_Click"/>
+            <AppBarElementContainer>
+                <TextBlock x:Name="HeaderTitle" Text="Загрузка..." VerticalAlignment="Center" Margin="10,0,0,0"/>
+            </AppBarElementContainer>
+        </CommandBar>
+
+        <!-- Браузер для просмотра статьи -->
+        <WebView x:Name="ArticleWebView" Grid.Row="1"/>
+    </Grid>
+</Page>
