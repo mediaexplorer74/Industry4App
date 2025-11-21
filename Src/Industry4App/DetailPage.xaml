@@ -16,11 +16,11 @@
 
         <!-- ScrollView для отображения содержимого статьи -->
         <ScrollViewer Grid.Row="1" Padding="10">
-            <StackPanel>
+            <StackPanel x:Name="ArticleContentPanel">
                 <Image x:Name="ArticleImage" Stretch="Uniform" MaxHeight="300" Margin="0,0,0,10"/>
                 <TextBlock x:Name="ArticleTitleTextBlock" TextWrapping="Wrap" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
                 <TextBlock x:Name="ArticleOverviewTextBlock" TextWrapping="Wrap" FontSize="14" FontStyle="Italic" Margin="0,0,0,10"/>
-                <TextBlock x:Name="ArticleContentTextBlock" TextWrapping="Wrap" FontSize="14"/>
+                <!-- Content will be dynamically added here -->
             </StackPanel>
         </ScrollViewer>
     </Grid>

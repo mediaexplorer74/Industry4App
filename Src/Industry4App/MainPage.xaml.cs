@@ -1,10 +1,13 @@
 ﻿using HtmlAgilityPack;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace Industry4App
@@ -13,6 +16,11 @@ namespace Industry4App
     {
         // Коллекция, которая автоматически обновляет интерфейс при добавлении элементов
         public ObservableCollection<NewsItem> NewsItems { get; set; } = new ObservableCollection<NewsItem>();
+        
+        // Переменные для отслеживания состояния загрузки
+        private bool _isLoading = false;
+        private int _currentPage = 1;
+        private bool _hasMoreItems = true;
 
         public MainPage()
         {
@@ -42,11 +50,65 @@ namespace Industry4App
                     deferral.Complete();
                 };
             }
+            
+            // Подписываемся на событие прокрутки
+            if (NewsListView != null)
+            {
+                var scrollViewer = FindVisualChild<ScrollViewer>(NewsListView);
+                if (scrollViewer != null)
+                {
+                    scrollViewer.ViewChanged += ScrollViewer_ViewChanged;
+                }
+            }
+        }
+        
+        // Метод для поиска визуального дочернего элемента
+        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child != null && child is T)
+                    return (T)child;
+
+                var childOfChild = FindVisualChild<T>(child);
+                if (childOfChild != null)
+                    return childOfChild;
+            }
+            return null;
+        }
+        
+        // Обработчик события прокрутки
+        private async void ScrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            var scrollViewer = sender as ScrollViewer;
+            if (scrollViewer != null && !_isLoading && _hasMoreItems)
+            {
+                // Проверяем, достигли ли мы конца списка
+                if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight - 200) // Загружаем заранее
+                {
+                    await LoadMoreNews();
+                }
+            }
         }
 
         private async Task LoadNews(bool isRefresh = false)
         {
+            // Если это обновление (pull-to-refresh), сбрасываем параметры
+            if (isRefresh)
+            {
+                _currentPage = 1;
+                _hasMoreItems = true;
+                NewsItems.Clear();
+            }
+            
             string url = "https://trends.rbc.ru/trends/industry";
+            
+            // Для дополнительных страниц добавляем параметры пагинации
+            if (_currentPage > 1)
+            {
+                url += $"?page={_currentPage}&loading=lazy";
+            }
 
             try
             {
@@ -67,6 +129,13 @@ namespace Industry4App
                     var articles = doc.DocumentNode.Descendants("article")
                         .Where(node => node.GetAttributeValue("class", "").Contains("item js-load-item"))
                         .Take(50); // Берем до 50 штук
+
+                    // Если статей нет, значит больше нет данных для загрузки
+                    if (!articles.Any())
+                    {
+                        _hasMoreItems = false;
+                        return;
+                    }
 
                     // Если это обновление (pull-to-refresh), очищаем старые элементы
                     if (isRefresh)
@@ -163,7 +232,7 @@ namespace Industry4App
                         // Заглушка, если картинки нет
                         if (string.IsNullOrEmpty(item.ImageUrl))
                         {
-                            item.ImageUrl = "ms-appx:///Assets/StoreLogo.png";
+                            item.ImageUrl = "ms-appx:///Assets/assets/default_icon.png";
                         }
 
                         // 3. Ищем краткое описание (Subtitle)
@@ -205,6 +274,9 @@ namespace Industry4App
                         }
                     }
                     
+                    // Увеличиваем номер страницы для следующей загрузки
+                    _currentPage++;
+                    
                     // После загрузки всех элементов, если это обновление, прокручиваем список к началу
                     if (isRefresh)
                     {
@@ -229,8 +301,27 @@ namespace Industry4App
             catch (Exception ex)
             {
                 // Простая обработка ошибок
-                var dialog = new Windows.UI.Popups.MessageDialog("Ошибка загрузки: " + ex.Message);
-                await dialog.ShowAsync();
+                //var dialog = new Windows.UI.Popups.MessageDialog("Ошибка загрузки: " + ex.Message);
+                //await dialog.ShowAsync();
+                Debug.WriteLine("[ex] Ошибка загрузки: " + ex.Message);
+            }
+        }
+        
+        // Метод для загрузки дополнительных новостей
+        private async Task LoadMoreNews()
+        {
+            if (_isLoading || !_hasMoreItems)
+                return;
+                
+            _isLoading = true;
+            
+            try
+            {
+                await LoadNews();
+            }
+            finally
+            {
+                _isLoading = false;
             }
         }
 
